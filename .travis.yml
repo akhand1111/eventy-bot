@@ -12,7 +12,9 @@ jobs:
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
         - docker push vlakam/eventy-bot:amd64
     - os: linux
-      arch: arm64
+      arch: arm64-graviton2
+      virt: lxd
+      group: edge
       script:
         - docker build -t vlakam/eventy-bot:arm64 .
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
@@ -23,5 +25,15 @@ jobs:
       script:
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
         - curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-amd64
+        - chmod +x manifest-tool
+        - ./manifest-tool push from-spec docker-multi-arch-manifest.yaml
+    - os: linux
+      arch: arm64-graviton2
+      virt: lxd
+      group: edge
+      stage: Push manifesto
+      script:
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+        - curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-arm64
         - chmod +x manifest-tool
         - ./manifest-tool push from-spec docker-multi-arch-manifest.yaml
